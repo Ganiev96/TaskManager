@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Dtos;
+using TaskManager.Extensions;
 using TaskManager.Interfaces;
 
 namespace TaskManager.Controllers
@@ -18,7 +19,7 @@ namespace TaskManager.Controllers
             _service = service;
         }
 
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("admin")]
         public ActionResult AdminOnly()
         {
@@ -29,13 +30,15 @@ namespace TaskManager.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll(int page = 1, int pageSize = 5)
         {
-            return Ok(await _service.GetAll(page, pageSize));
+            var userId = User.GetUserId();
+            return Ok(await _service.GetAll(userId, page, pageSize));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateTaskDto dto)
         {
-            await _service.Create(dto);
+            var userId = User.GetUserId();
+            await _service.Create(userId, dto);
             return Ok();
         }
 
@@ -43,14 +46,16 @@ namespace TaskManager.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateTaskDto dto)
         {
-            await _service.Update(id, dto);
+            var userId = User.GetUserId();
+            await _service.Update(userId, id, dto);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.Delete(id);
+            var userId = User.GetUserId();
+            await _service.Delete(userId, id);
             return NoContent();
         }
     }

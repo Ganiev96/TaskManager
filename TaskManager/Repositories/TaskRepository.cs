@@ -12,18 +12,23 @@ public class TaskRepository : ITaskRepository
         _context = context;
     }
 
-    public async Task<List<TaskItem>> GetAll(int page, int pageSize)
+    public async Task<List<TaskItem>> GetAll(int userId, int page, int pageSize)
     {
         return await _context.Tasks
-            .Include(x => x.Project)
+            .Include(t => t.Project)
+            .Include(t=>t.User)
+            .Where(t => t.UserId == userId)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
     }
 
-    public async Task<TaskItem?> GetById(int id)
+    public async Task<TaskItem?> GetById(int id, int userId)
     {
-        return await _context.Tasks.FindAsync(id);
+        return await _context.Tasks
+            .Include (t => t.Project)
+            .Include(t => t.User)
+            .FirstOrDefaultAsync(t=> t.Id == id && t.UserId == userId);
     }
 
     public async Task Add(TaskItem task)

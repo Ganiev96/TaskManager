@@ -13,27 +13,28 @@ public class TaskService : ITaskService
         _mapper = mapper;
     }
 
-    public async Task<List<TaskResponseDto>> GetAll(int page, int pageSize)
+    public async Task<List<TaskResponseDto>> GetAll(int userId, int page, int pageSize)
     {
-        var tasks = await _repo.GetAll(page, pageSize);
+        var tasks = await _repo.GetAll(userId, page, pageSize);
         return _mapper.Map<List<TaskResponseDto>>(tasks);
     }
 
-    public async Task Create(CreateTaskDto dto)
+    public async Task Create(int userId, CreateTaskDto dto)
     {
         if (!await _repo.ProjectExists(dto.ProjectId))
             throw new Exception("Project not found");
 
         var task = _mapper.Map<TaskItem>(dto);
         task.IsCompleted = false;
+        task.UserId = userId;
 
         await _repo.Add(task);
         await _repo.Save();
     }
 
-    public async Task Update(int id, UpdateTaskDto dto)
+    public async Task Update( int userId, int id, UpdateTaskDto dto)
     {
-        var task = await _repo.GetById(id);
+        var task = await _repo.GetById(id, userId);
         if (task == null)
             throw new Exception("Task not found");
 
@@ -44,9 +45,9 @@ public class TaskService : ITaskService
         await _repo.Save();
     }
 
-    public async Task Delete(int id)
+    public async Task Delete(int userId, int id)
     {
-        var task = await _repo.GetById(id);
+        var task = await _repo.GetById(id, userId);
         if (task == null)
             throw new Exception("Task not found");
 

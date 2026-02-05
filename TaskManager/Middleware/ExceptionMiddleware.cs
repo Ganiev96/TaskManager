@@ -20,15 +20,21 @@ namespace TaskManager.Middleware
             }
             catch (Exception ex)
             {
+                Console.WriteLine("🔥 EXCEPTION:");
+                Console.WriteLine(ex.ToString());
+
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";
 
                 var response = new
                 {
-                    error = ex.Message
+                    error = ex.Message,
+                    stack = ex.StackTrace
                 };
+
                 await context.Response.WriteAsync(JsonSerializer.Serialize(response));
             }
         }
+
     }
 }
