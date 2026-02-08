@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskManager.Dtos;
 using TaskManager.Interfaces;
+using TaskManager.Models;
 
 namespace TaskManager.Controllers;
 
@@ -25,6 +26,7 @@ public class ProjectController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _service.GetAll());
+        var result = await _service.GetAll();
+        return Ok(ApiResponse<List<ProjectResponseDto>>.Ok(result));
     }
 }

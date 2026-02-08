@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Data;
+using TaskManager.Models;
 
 namespace TaskManager.Controllers
 {
@@ -18,17 +19,20 @@ namespace TaskManager.Controllers
         [HttpGet]
         public ActionResult GetAll()
         {
-            return Ok(_context.Users.Select(x => new
+            var users = _context.Users.Select(x => new
             {
                 x.Id,
                 x.UserName,
                 x.Role
-            }));
+            }).ToList();
+
+            return Ok(ApiResponse<object>.Ok(users));
         }
         [HttpGet("{id}")]
-        public ActionResult GetById(int id) {
+        public ActionResult GetById(int id)
+        {
             var user = _context.Users.Find(id);
-            if(user == null) return NotFound();
+            if (user == null) return NotFound();
 
             return Ok(new
             {
@@ -39,9 +43,10 @@ namespace TaskManager.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id) {
+        public ActionResult Delete(int id)
+        {
             var user = _context.Users.Find(id);
-            if(user == null) return NotFound();
+            if (user == null) return NotFound();
 
             _context.Users.Remove(user);
             _context.SaveChanges();

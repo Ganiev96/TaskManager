@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManager.Dtos;
 using TaskManager.Extensions;
 using TaskManager.Interfaces;
+using TaskManager.Models;
 
 namespace TaskManager.Controllers
 {
@@ -31,7 +32,9 @@ namespace TaskManager.Controllers
         public async Task<IActionResult> GetAll(int page = 1, int pageSize = 5)
         {
             var userId = User.GetUserId();
-            return Ok(await _service.GetAll(userId, page, pageSize));
+            var tasks = await _service.GetAll(userId,page, pageSize);
+
+            return Ok(ApiResponse<List<TaskResponseDto>>.Ok(tasks));
         }
 
         [HttpPost]
